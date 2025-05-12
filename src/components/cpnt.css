@@ -1,0 +1,108 @@
+.rn-footer {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem; /* Adds consistent spacing between children */
+}
+
+/* --- React Colorful Base Styling --- */
+
+/* Ensure the react-colorful component fills its wrapper and lays out internally with flex */
+.color-picker-wrapper .react-colorful {
+  width: 100% !important; /* Fill the wrapper's width */
+  height: 100% !important; /* Fill the wrapper's height */
+  display: flex;
+  flex-direction: column;
+  position: relative; /* For absolute positioned children like pointers */
+  box-sizing: border-box;
+  user-select: none; /* Prevent text selection during drag */
+  /* You can add padding here if you want space *inside* the color picker bounds */
+  /* padding: 8px; */
+}
+
+/* Saturation/Value area (the main square) */
+.color-picker-wrapper .react-colorful__saturation {
+  flex-grow: 1; /* Takes up most of the vertical space */
+  position: relative; /* For the saturation pointer */
+  border-radius: 6px; /* Rounded corners for the saturation panel */
+  cursor: pointer;
+  /* The library applies background gradients for color via inline styles */
+  /* Ensure touch actions are smooth on mobile */
+  touch-action: none;
+}
+
+/* Hue slider */
+.color-picker-wrapper .react-colorful__hue {
+  margin-top: 12px; /* Space between saturation and hue */
+  height: 16px; /* Height of the hue slider */
+  position: relative; /* For the hue pointer */
+  border-radius: 8px; /* Pill-shaped slider bar */
+  cursor: pointer;
+  /* The library applies background gradient for hue via inline styles */
+  touch-action: none;
+}
+
+/* Alpha slider (for RGBA/HSLA pickers) */
+.color-picker-wrapper .react-colorful__alpha {
+  margin-top: 12px; /* Space between hue/saturation and alpha */
+  height: 16px; /* Height of the alpha slider */
+  position: relative; /* For the alpha pointer */
+  border-radius: 8px; /* Pill-shaped slider bar */
+  cursor: pointer;
+  /* Checkerboard background for transparency indication */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill-opacity='.07'%3E%3Crect x='8' width='8' height='8'/%3E%3Crect y='8' width='8' height='8'/%3E%3C/svg%3E");
+  /* The library applies the color gradient part of the background via inline styles on top */
+  touch-action: none;
+}
+
+/* This class might be used by the library to overlay the gradient on the alpha slider's checkerboard */
+.color-picker-wrapper .react-colorful__alpha-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit; /* Match parent's border-radius */
+}
+
+/* Common pointer styles (the draggable circle/element) */
+/* The library uses `react-colorful__pointer` for common absolute positioning logic,
+   and then specific classes like `__saturation-pointer` for individual styling. */
+.color-picker-wrapper .react-colorful__pointer {
+  position: absolute; /* Library sets top/left via inline styles */
+  box-sizing: border-box;
+  /* Center the visual pointer element on its calculated (top, left) position */
+  transform: translate(-50%, -50%);
+  z-index: 1; /* Ensure pointers are above the color areas */
+}
+
+/* Saturation pointer style (the one on the big square) */
+.color-picker-wrapper .react-colorful__saturation-pointer {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%; /* Circular pointer */
+  background-color: transparent; /* Let border create the circle */
+  border: 2px solid #fff;
+  /* Subtle shadow for depth and contrast */
+  box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.7), inset 0 0 0 1.5px rgba(0, 0, 0, 0.7);
+}
+
+/* Hue and Alpha pointer styles (on the sliders) */
+.color-picker-wrapper .react-colorful__hue-pointer,
+.color-picker-wrapper .react-colorful__alpha-pointer {
+  width: 18px; /* Slightly smaller than saturation pointer for visual hierarchy */
+  height: 18px;
+  border-radius: 50%; /* Circular pointer */
+  background-color: transparent;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.7), inset 0 0 0 1.5px rgba(0, 0, 0, 0.7);
+}
+
+/* Optional: Focus states for accessibility and visual feedback */
+.color-picker-wrapper .react-colorful__interactive:focus {
+  outline: none; /* Remove default browser outline */
+}
+.color-picker-wrapper .react-colorful__interactive:focus .react-colorful__pointer {
+  /* Example: make pointer slightly larger or change shadow on focus */
+  /* transform: translate(-50%, -50%) scale(1.1); */
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.8), inset 0 0 0 2px rgba(0, 0, 0, 0.8), 0 0 0 3px dodgerblue; /* Example focus ring */
+}
