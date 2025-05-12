@@ -1,54 +1,50 @@
-# React + TypeScript + Vite
+# Whateversomething.com
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple, open-source utility app providing various useful tools for developers and regular users.  
+This project includes:
 
-Currently, two official plugins are available:
+- **Color Picker:** Easily select and copy color values in multiple formats.
+- **Password Generator:** Create secure, customizable passwords with options for length and character types.
+- **Random Number Generator:** Generate random numbers with support for negative values, decimals, and significant figures.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- Modern, responsive UI built with React and Tailwind CSS
+- Copy-to-clipboard functionality for color values
+- Customizable password and number generation
+- Dark theme support
+- No tracking, ads, or analytics
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Getting Started
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+1. Clone the repository:
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+   ```sh
+   git clone https://github.com/JEMasonMedia/whateversomething.com.git
+   cd whateversomething.com
+   ```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+2. Install dependencies:
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+   ```sh
+   npm install
+   ```
+
+3. Start the development server:
+
+   ```sh
+   npm run dev
+   ```
+
+4. Build for production:
+   ```sh
+   npm run build
+   ```
+
+## License
+
+This project is licensed under the [MIT License](./LICENSE).
+
+---
+
+**Contributions are welcome!**
