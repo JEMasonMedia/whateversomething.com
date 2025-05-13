@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react'
 import Card from './Card'
+import { useCopyToClipboard } from '../hooks/useCopyToClipboard'
 import { RgbaColorPicker, type RgbaColor } from 'react-colorful'
-import { toast } from 'react-toastify'
 import SeedColorModal from './SeedColorModal'
 import './cpnt.css'
 import 'react-toastify/dist/ReactToastify.css'
@@ -180,12 +180,13 @@ const ColorPicker: React.FC = () => {
   const [showInverse, setShowInverse] = useState(false)
   const [showPalette, setShowPalette] = useState(false)
   const [showPaletteValues, setShowPaletteValues] = useState(false)
-
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   // Add these functions within the ColorPicker component
   const openModal = () => setIsModalOpen(true)
   const closeModal = () => setIsModalOpen(false)
+
+  const copyToClipboard = useCopyToClipboard()
 
   // Handles data submitted from the modal
   const handleSeedSubmit = (data: { seedColor: RgbaColor; showInverse: boolean; showPalette: boolean }) => {
@@ -239,47 +240,6 @@ const ColorPicker: React.FC = () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [contextMenu, closeContextMenu]) // Dependencies are correct
-
-  // --- REFINED copyToClipboard function ---
-  const copyToClipboard = async (text: string, formatName: string) => {
-    // Use a toastId to prevent visual duplicates if events fire rapidly
-    const uniqueToastId = `copy-${formatName}-${Date.now()}`
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        // Use modern API - MUST await the promise
-        await navigator.clipboard.writeText(text)
-        toast.success(`Copied ${formatName}!`, { toastId: uniqueToastId })
-      } else {
-        // Use fallback
-        console.warn('Using fallback copy method.')
-        const textArea = document.createElement('textarea')
-        textArea.value = text
-        textArea.style.position = 'fixed' // Prevent scrolling to bottom
-        textArea.style.top = '0'
-        textArea.style.left = '0'
-        textArea.style.opacity = '0'
-        textArea.style.pointerEvents = 'none'
-        document.body.appendChild(textArea)
-        textArea.focus()
-        textArea.select()
-        const successful = document.execCommand('copy')
-        document.body.removeChild(textArea)
-        if (successful) {
-          toast.success(`Copied ${formatName} (fallback)!`, { toastId: uniqueToastId })
-        } else {
-          // Throw error to be caught by the catch block
-          throw new Error('Fallback: document.execCommand("copy") failed')
-        }
-      }
-    } catch (err) {
-      console.error('Copy process failed:', err)
-      // Use a different ID for error toast to ensure it shows even if success was attempted
-      toast.error(`Copy failed!`, { toastId: `error-${uniqueToastId}` })
-    } finally {
-      // Ensure context menu is always closed after the operation attempt
-      closeContextMenu()
-    }
-  }
 
   return (
     <Card title='Color Picker'>
@@ -481,7 +441,7 @@ const ColorPicker: React.FC = () => {
           {/* Make buttons call the async function directly */}
           <button
             className='block w-full text-left px-3 py-1.5 hover:bg-gray-600 rounded'
-            onClick={() => copyToClipboard(`#${rgbaToHex(contextMenu.colorData!)}`, 'Hex')}>
+            onClick={() => copyToClipboard(`${rgbaToHex(contextMenu.colorData!)}`, 'Hex', closeContextMenu)}>
             Copy Hex
           </button>
           <button
@@ -491,7 +451,8 @@ const ColorPicker: React.FC = () => {
                 `rgba(${contextMenu.colorData!.r}, ${contextMenu.colorData!.g}, ${
                   contextMenu.colorData!.b
                 }, ${contextMenu.colorData!.a.toFixed(2)})`,
-                'RGBA'
+                'RGBA',
+                closeContextMenu
               )
             }>
             Copy RGBA
@@ -500,7 +461,7 @@ const ColorPicker: React.FC = () => {
             className='block w-full text-left px-3 py-1.5 hover:bg-gray-600 rounded'
             onClick={() => {
               const hsl = rgbaToHsl(contextMenu.colorData!)
-              copyToClipboard(`hsl(${hsl.h}°, ${hsl.s}%, ${hsl.l}%, ${hsl.a.toFixed(2)})`, 'HSL')
+              copyToClipboard(`hsl(${hsl.h}°, ${hsl.s}%, ${hsl.l}%, ${hsl.a.toFixed(2)})`, 'HSL', closeContextMenu)
             }}>
             Copy HSL
           </button>

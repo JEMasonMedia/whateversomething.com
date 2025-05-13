@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import ColorPicker from './components/ColorPicker'
 import PasswordGenerator from './components/PasswordGenerator'
 import RandomNumberGenerator from './components/RandomNumberGenerator'
+import RandomUsers from './components/RandomUsers'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         A simple utility app for generating various useful things for developers and regular folk.
       </p>
       <ColorPicker />
+      <RandomUsers />
       <PasswordGenerator />
       <RandomNumberGenerator />
 
