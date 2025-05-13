@@ -5,16 +5,9 @@ import { Combobox } from '@headlessui/react'
 import { ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import { useCopyToClipboard } from '../hooks/useCopyToClipboard'
 import type { UserMinimal, UserExpanded, User, UserType } from '../types/randomUser' //, RandomUserApiResponse
-import { GENDERS, NATIONALITIES } from '../constants/randomUser'
+import { GENDERS, NATIONALITIES, USER_COUNTS, FIELD_MAP } from '../constants/randomUser'
 import { parseUserData, getUserRawData } from '../utils/parseUserData'
-
-const USER_COUNTS = [5, 10, 20, 50, 100]
-
-const FIELD_MAP: Record<UserType, string | undefined> = {
-  minimal: 'login,name,email,id,picture',
-  expanded: 'login,name,email,id,location,picture',
-  all: undefined,
-}
+import { FaSpinner } from 'react-icons/fa'
 
 const JsonViewer = <T extends object>({
   data,
@@ -205,8 +198,9 @@ const RandomUsers: React.FC = () => {
           <div className='flex flex-col justify-end'>
             <button
               onClick={fetchUsers}
-              className='px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow h-9'
+              className='px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow h-9 flex items-center justify-center'
               disabled={loading}>
+              {loading ? <FaSpinner className='animate-spin mr-2' /> : null}
               {loading ? 'Loading...' : 'Get Users'}
             </button>
           </div>
@@ -221,118 +215,126 @@ const RandomUsers: React.FC = () => {
           </button>
         </div>
       </div>
+
       {error && <div className='text-red-400 mb-2'>{error}</div>}
-      <div className='max-h-96 overflow-y-auto space-y-2'>
-        {users.map((user, idx) => {
-          if (userType === 'minimal') {
-            const u = user as UserMinimal
-            return (
-              <div key={u.login?.uuid ?? idx} className='bg-gray-800 rounded shadow p-2'>
-                <button
-                  className='flex items-center w-full text-left gap-3 focus:outline-none'
-                  onClick={() => setExpandedIndex(expandedIndex === idx ? null : idx)}>
-                  {u.picture?.thumbnail && (
-                    <img
-                      src={u.picture.thumbnail}
-                      alt='User thumbnail'
-                      className='rounded-full border border-gray-600 w-12 h-12'
-                    />
+
+      {loading ? (
+        <div className='flex justify-center py-8'>
+          <FaSpinner className='animate-spin text-4xl text-blue-400' />
+        </div>
+      ) : (
+        <div className='max-h-96 overflow-y-auto space-y-2'>
+          {users.map((user, idx) => {
+            if (userType === 'minimal') {
+              const u = user as UserMinimal
+              return (
+                <div key={u.login?.uuid ?? idx} className='bg-gray-800 rounded shadow p-2'>
+                  <button
+                    className='flex items-center w-full text-left gap-3 focus:outline-none'
+                    onClick={() => setExpandedIndex(expandedIndex === idx ? null : idx)}>
+                    {u.picture?.thumbnail && (
+                      <img
+                        src={u.picture.thumbnail}
+                        alt='User thumbnail'
+                        className='rounded-full border border-gray-600 w-12 h-12'
+                      />
+                    )}
+                    <div>
+                      <div className='font-semibold text-white'>
+                        {u.name?.title} {u.name?.first} {u.name?.last}
+                      </div>
+                      <div className='text-xs text-gray-300'>{u.email}</div>
+                      <div className='text-xs text-gray-400'>
+                        Username: {u.login?.username} | Password: {u.login?.password}
+                      </div>
+                    </div>
+                    <span className='ml-auto text-blue-300 text-xs'>
+                      {expandedIndex === idx ? 'Hide Details ▲' : 'Show Details ▼'}
+                    </span>
+                  </button>
+                  {expandedIndex === idx && (
+                    <div className='mt-2'>
+                      <JsonViewer data={u} raw={rawData} format={format} userIdentifier={idx} />
+                    </div>
                   )}
-                  <div>
-                    <div className='font-semibold text-white'>
-                      {u.name?.title} {u.name?.first} {u.name?.last}
+                </div>
+              )
+            } else if (userType === 'expanded') {
+              const u = user as UserExpanded
+              return (
+                <div key={u.login?.uuid ?? idx} className='bg-gray-800 rounded shadow p-2'>
+                  <button
+                    className='flex items-center w-full text-left gap-3 focus:outline-none'
+                    onClick={() => setExpandedIndex(expandedIndex === idx ? null : idx)}>
+                    {u.picture?.thumbnail && (
+                      <img
+                        src={u.picture.thumbnail}
+                        alt='User thumbnail'
+                        className='rounded-full border border-gray-600 w-12 h-12'
+                      />
+                    )}
+                    <div>
+                      <div className='font-semibold text-white'>
+                        {u.name?.title} {u.name?.first} {u.name?.last}
+                      </div>
+                      <div className='text-xs text-gray-300'>
+                        {u.email} &middot; {u.location?.country}
+                      </div>
+                      <div className='text-xs text-gray-400'>
+                        Username: {u.login?.username} | Password: {u.login?.password}
+                      </div>
                     </div>
-                    <div className='text-xs text-gray-300'>{u.email}</div>
-                    <div className='text-xs text-gray-400'>
-                      Username: {u.login?.username} | Password: {u.login?.password}
+                    <span className='ml-auto text-blue-300 text-xs'>
+                      {expandedIndex === idx ? 'Hide Details ▲' : 'Show Details ▼'}
+                    </span>
+                  </button>
+                  {expandedIndex === idx && (
+                    <div className='mt-2'>
+                      <JsonViewer data={u} raw={rawData} format={format} userIdentifier={idx} />
                     </div>
-                  </div>
-                  <span className='ml-auto text-blue-300 text-xs'>
-                    {expandedIndex === idx ? 'Hide Details ▲' : 'Show Details ▼'}
-                  </span>
-                </button>
-                {expandedIndex === idx && (
-                  <div className='mt-2'>
-                    <JsonViewer data={u} raw={rawData} format={format} userIdentifier={idx} />
-                  </div>
-                )}
-              </div>
-            )
-          } else if (userType === 'expanded') {
-            const u = user as UserExpanded
-            return (
-              <div key={u.login?.uuid ?? idx} className='bg-gray-800 rounded shadow p-2'>
-                <button
-                  className='flex items-center w-full text-left gap-3 focus:outline-none'
-                  onClick={() => setExpandedIndex(expandedIndex === idx ? null : idx)}>
-                  {u.picture?.thumbnail && (
-                    <img
-                      src={u.picture.thumbnail}
-                      alt='User thumbnail'
-                      className='rounded-full border border-gray-600 w-12 h-12'
-                    />
                   )}
-                  <div>
-                    <div className='font-semibold text-white'>
-                      {u.name?.title} {u.name?.first} {u.name?.last}
+                </div>
+              )
+            } else {
+              const u = user as User
+              return (
+                <div key={u.login?.uuid ?? idx} className='bg-gray-800 rounded shadow p-2'>
+                  <button
+                    className='flex items-center w-full text-left gap-3 focus:outline-none'
+                    onClick={() => setExpandedIndex(expandedIndex === idx ? null : idx)}>
+                    {u.picture?.thumbnail && (
+                      <img
+                        src={u.picture.thumbnail}
+                        alt='User thumbnail'
+                        className='rounded-full border border-gray-600 w-12 h-12'
+                      />
+                    )}
+                    <div>
+                      <div className='font-semibold text-white'>
+                        {u.name?.title} {u.name?.first} {u.name?.last}
+                      </div>
+                      <div className='text-xs text-gray-300'>{u.email}</div>
                     </div>
-                    <div className='text-xs text-gray-300'>
-                      {u.email} &middot; {u.location?.country}
+                    <span className='ml-auto text-blue-300 text-xs'>
+                      {expandedIndex === idx ? 'Hide Details ▲' : 'Show Details ▼'}
+                    </span>
+                  </button>
+                  {expandedIndex === idx && (
+                    <div className='mt-2'>
+                      <JsonViewer data={u} raw={rawData} format={format} userIdentifier={idx} />
                     </div>
-                    <div className='text-xs text-gray-400'>
-                      Username: {u.login?.username} | Password: {u.login?.password}
-                    </div>
-                  </div>
-                  <span className='ml-auto text-blue-300 text-xs'>
-                    {expandedIndex === idx ? 'Hide Details ▲' : 'Show Details ▼'}
-                  </span>
-                </button>
-                {expandedIndex === idx && (
-                  <div className='mt-2'>
-                    <JsonViewer data={u} raw={rawData} format={format} userIdentifier={idx} />
-                  </div>
-                )}
-              </div>
-            )
-          } else {
-            const u = user as User
-            return (
-              <div key={u.login?.uuid ?? idx} className='bg-gray-800 rounded shadow p-2'>
-                <button
-                  className='flex items-center w-full text-left gap-3 focus:outline-none'
-                  onClick={() => setExpandedIndex(expandedIndex === idx ? null : idx)}>
-                  {u.picture?.thumbnail && (
-                    <img
-                      src={u.picture.thumbnail}
-                      alt='User thumbnail'
-                      className='rounded-full border border-gray-600 w-12 h-12'
-                    />
                   )}
-                  <div>
-                    <div className='font-semibold text-white'>
-                      {u.name?.title} {u.name?.first} {u.name?.last}
-                    </div>
-                    <div className='text-xs text-gray-300'>{u.email}</div>
-                  </div>
-                  <span className='ml-auto text-blue-300 text-xs'>
-                    {expandedIndex === idx ? 'Hide Details ▲' : 'Show Details ▼'}
-                  </span>
-                </button>
-                {expandedIndex === idx && (
-                  <div className='mt-2'>
-                    <JsonViewer data={u} raw={rawData} format={format} userIdentifier={idx} />
-                  </div>
-                )}
-              </div>
-            )
-          }
-        })}
-        {!users.length && !loading && (
-          <div className='text-center text-gray-400 py-8'>
-            No users loaded. Click "Get Users" to fetch random users.
-          </div>
-        )}
-      </div>
+                </div>
+              )
+            }
+          })}
+          {!users.length && !loading && (
+            <div className='text-center text-gray-400 py-8'>
+              No users loaded. Click "Get Users" to fetch random users.
+            </div>
+          )}
+        </div>
+      )}
       <div className='mt-6 text-xs text-gray-400 text-center'>
         Data powered by{' '}
         <a

@@ -1,3 +1,5 @@
+import type { UserType } from '../types/randomUser' //, RandomUserApiResponse
+
 export const GENDERS = [
   { label: 'Any', value: '' },
   { label: 'Male', value: 'male' },
@@ -28,3 +30,11 @@ export const NATIONALITIES = [
   { label: 'Ukraine', value: 'ua' },
   { label: 'United States', value: 'us' },
 ]
+
+export const USER_COUNTS = [5, 10, 20, 50, 100]
+
+export const FIELD_MAP: Record<UserType, string | undefined> = {
+  minimal: 'login,name,email,id,picture',
+  expanded: 'login,name,email,id,location,picture',
+  all: undefined,
+}
