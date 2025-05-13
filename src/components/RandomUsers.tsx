@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import Card from './Card'
-import { Combobox } from '@headlessui/react'
+import { Combobox, ComboboxButton, ComboboxInput, ComboboxOption, ComboboxOptions } from '@headlessui/react'
 import { ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import { useCopyToClipboard } from '../hooks/useCopyToClipboard'
 import type { UserMinimal, UserExpanded, User, UserType } from '../types/randomUser' //, RandomUserApiResponse
@@ -97,7 +97,7 @@ const RandomUsers: React.FC = () => {
             <div className='flex gap-2'>
               <Combobox value={numUsers} onChange={handleUserCountChange}>
                 <div className='relative'>
-                  <Combobox.Input
+                  <ComboboxInput
                     className='w-20 px-2 py-1 rounded border border-gray-400 bg-gray-800 text-white h-9'
                     value={userCountInput}
                     onChange={e => {
@@ -108,30 +108,39 @@ const RandomUsers: React.FC = () => {
                     }}
                     onBlur={() => {
                       const n = Number(userCountInput)
-                      if (!USER_COUNTS.includes(n)) {
-                        const closest = USER_COUNTS.reduce((prev, curr) =>
-                          Math.abs(curr - n) < Math.abs(prev - n) ? curr : prev
-                        )
-                        setNumUsers(closest)
-                        setUserCountInput(closest.toString())
+                      if (!n || n < 1) {
+                        setNumUsers(USER_COUNTS[0])
+                        setUserCountInput(USER_COUNTS[0].toString())
                       }
                     }}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') {
+                        const n = Number(userCountInput)
+                        if (!isNaN(n) && n > 0) {
+                          setNumUsers(n)
+                        }
+                      }
+                    }}
+                    displayValue={() => userCountInput}
+                    // displayValue is optional, but can help with custom values
                   />
-                  <Combobox.Button className='absolute inset-y-0 right-0 flex items-center pr-2'>
+                  <ComboboxButton className='absolute inset-y-0 right-0 flex items-center pr-2'>
                     <ChevronUpDownIcon className='h-5 w-5 text-gray-400' aria-hidden='true' />
-                  </Combobox.Button>
-                  <Combobox.Options className='absolute z-10 mt-1 w-full bg-gray-900 border border-gray-700 rounded shadow-lg max-h-48 overflow-auto focus:outline-none'>
+                  </ComboboxButton>
+                  <ComboboxOptions className='absolute z-10 mt-1 w-full bg-gray-900 border border-gray-700 rounded shadow-lg max-h-48 overflow-auto focus:outline-none'>
                     {USER_COUNTS.map(count => (
-                      <Combobox.Option
+                      <ComboboxOption
                         key={count}
                         value={count}
-                        className={({ active }) =>
-                          `cursor-pointer select-none px-4 py-2 ${active ? 'bg-blue-600 text-white' : 'text-gray-100'}`
+                        className={({ selected }) =>
+                          `cursor-pointer select-none px-4 py-2 ${
+                            selected ? 'bg-gray-700 text-white' : 'text-gray-100'
+                          }`
                         }>
                         {count}
-                      </Combobox.Option>
+                      </ComboboxOption>
                     ))}
-                  </Combobox.Options>
+                  </ComboboxOptions>
                 </div>
               </Combobox>
             </div>
